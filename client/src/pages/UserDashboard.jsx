@@ -1,26 +1,34 @@
-import React, { useContext, useState } from 'react';
-import { usePets } from '../Context/context'; // Adjust the import based on your file structure
-import { UserContext } from '../Context/context';
+import React, { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie'; // Ensure this is installed
+import { UserContext } from '../Context/context'; // Assuming this is where your context is
 
 const UserDashboard = () => {
-  const { addPet } = usePets(); // Get addPet from context
-  const {user}=useContext(UserContext)
-  console.log(user?.isAdmin);
-  
+  const { user } = useContext(UserContext);
   const [petDetails, setPetDetails] = useState({
     name: '',
     breed: '',
     age: '',
     description: '',
     image: '',
-    whatsappNumber: '',
-    countryCode: '+1', // Default country code (USA)
+    contact: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [token, setToken] = useState('');
 
-  const countryCodes = [
-    { code: '+92', country: 'Pakistan'}
-    // Add more country codes as needed
-  ];
+  useEffect(() => {
+    const fetchedToken = Cookies.get('token');
+    console.log('Fetched Token:', fetchedToken); // Log the fetched token
+    if (fetchedToken) {
+      setToken(fetchedToken);
+    }
+  }, []);
+
+  console.log('Headers:', {
+    Authorization: `Bearer ${token}`
+  });
+  
+  
 
   const handleInputChange = (e) => {
     setPetDetails({
@@ -43,28 +51,48 @@ const UserDashboard = () => {
     }
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!petDetails.name || !petDetails.breed || !petDetails.age || !petDetails.description || !petDetails.whatsappNumber) {
-      alert('Please fill in all required fields!');
+  
+    console.log('Token before submission:', token); // Check token before use
+    console.log('Pet Details:', petDetails); // Log pet details
+  
+    if (!token) {
+      alert('You are not authenticated! Please log in.');
       return;
     }
-    const newPet = {
-      ...petDetails,
-      adoptionStatus: 'Available', // Default status for new pets
-    };
-    addPet(newPet); // Add pet using context function
-    setPetDetails({
-      name: '',
-      breed: '',
-      age: '',
-      description: '',
-      image: '',
-      whatsappNumber: '',
-      countryCode: '+1', // Reset to default
-    });
-    alert('Pet added successfully!');
+  
+    setIsSubmitting(true);
+  
+    try {
+      console.log('Making request with headers:', {
+        Authorization: `Bearer ${token}`
+      });
+  
+      const response = await axios.post('http://localhost:3000/pets/post', petDetails, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      alert(response.data.message);
+      setPetDetails({
+        name: '',
+        breed: '',
+        age: '',
+        description: '',
+        image: '',
+        contact: '',
+      });
+    } catch (error) {
+      console.error("Error submitting pet:", error.response ? error.response.data : error.message);
+      alert('Error submitting pet. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+  
+  
 
   return (
     <div className="min-h-screen bg-gray-200 py-[90px] px-7">
@@ -142,40 +170,27 @@ const UserDashboard = () => {
             />
           </div>
 
-          {/* WhatsApp Number */}
+          {/* WhatsApp Contact Number */}
           <div>
-            <label className="block text-gray-300 mb-1 border-none ">WhatsApp Number:</label>
-            <div className="flex space-x-2">
-              <select
-                name="countryCode"
-                value={petDetails.countryCode}
-                onChange={handleInputChange}
-                className="w-1/4 bg-gray-600 text-gray-200 p-1 rounded-lg"
-              >
-                {countryCodes.map((code) => (
-                  <option key={code.code} value={code.code}>
-                    {code.code} ({code.country})
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                name="whatsappNumber"
-                value={petDetails.whatsappNumber}
-                onChange={handleInputChange}
-                placeholder="Enter WhatsApp number"
-                className="w-3/4 p-1 bg-gray-600 text-gray-200 rounded-lg"
-                required
-              />
-            </div>
+            <label className="block text-gray-300 mb-1">WhatsApp Contact:</label>
+            <input
+              type="text"
+              name="contact"
+              value={petDetails.contact}
+              onChange={handleInputChange}
+              placeholder="Enter WhatsApp number"
+              className="w-full p-1 bg-gray-600 text-gray-200 rounded-lg"
+              required
+            />
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-indigo-500 text-white px-4 py-1 rounded-lg font-semibold transition-colors duration-300 hover:bg-indigo-600"
+            disabled={isSubmitting}
           >
-            Add Pet
+            {isSubmitting ? 'Submitting...' : 'Add Pet'}
           </button>
         </form>
       </div>

@@ -5,7 +5,7 @@ const postSchema = new mongoose.Schema({
     age: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String, required: true },
-    contact: { type: String, required: true },
+    contact: { type: String,required:true},
     adoptionStatus: {
         type: String,
         enum: ['available', 'pending', 'adopted'],
@@ -32,5 +32,5 @@ const adminSchema = new mongoose.Schema({
     pendingPosts: [postSchema] // Reference to the post schema
 });
 
-  const admin = mongoose.model('Admin', adminSchema);
-export default admin;
+  const Admin = mongoose.model('Admin', adminSchema);
+export default Admin;

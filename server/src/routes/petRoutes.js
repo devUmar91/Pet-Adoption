@@ -1,17 +1,13 @@
-// const express = require('express');
 import express from 'express';
-// const { getPets, getPetById, createPet, updatePet, deletePet } = require('../controllers/petController');
-import { getPets,getPetById,createPet,updatePet,deletePet } from '../controllers/petController.js';
-// const { protect } = require('../middlewares/authMiddleware');
+import { getPets, getPetById, createPet, updatePet, deletePet } from '../controllers/petController.js';
 import { protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/',protect, getPets);
+router.get('/', getPets);
 router.get('/:id', getPetById);
-router.post('/post', createPet);
+router.post('/post', protect, createPet);  // Protected so only logged-in users can post
 router.put('/:id', protect, updatePet);
 router.delete('/:id', protect, deletePet);
-
 
 export default router;

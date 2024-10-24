@@ -10,9 +10,15 @@ const LoginPage = () => {
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  const {user,setUser}=useContext(UserContext)
-
+  const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to home if user is already logged in
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,20 +26,17 @@ const LoginPage = () => {
     try {
       const { data } = await axios.post('http://localhost:3000/auth/login', { email, password }, {
         withCredentials: true, // Necessary to send cookies
-        
       });
-      setUser(data)
-    console.log(data.role)       
-    data?.role === "admin" ? navigate("/admin"):navigate("/dashboard")
+      setUser(data);
+      console.log(data.role);
+      console.log(data);
 
+      data?.role === "admin" ? navigate("/admin") : navigate("/dashboard");
     } catch (err) {
       setError('Login failed. Please check your credentials.');
       console.error(err);
     }
   };
-
- 
-
 
   return (
     <div className="mx-auto py-[130px] bg-gray-200">

@@ -1,9 +1,27 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../Context/context";
+import axios from 'axios'
 
 const PetListPage = () => {
-  const { pets } = useContext(UserContext);
+  // const { pets } = useContext(UserContext);
+  const [pets,setPets]=useState([])
+
+  useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/pets"); // Adjust the endpoint based on your backend
+        setPets(response.data);
+        console.log(response.data);
+        
+      } catch (error) {
+        console.error("Error fetching pets:", error);
+      }
+    };
+
+    fetchPets();
+  }, []);
+  
 
   return (
     <div className="min-h-screen bg-gray-200 text-gray-800 px-6 pt-24">
@@ -13,7 +31,7 @@ const PetListPage = () => {
       </h2>
 
       {/* Conditional rendering: Show message if no pets */}
-      {pets.length === 0 ? (
+      {pets?.length === 0 ? (
         <div className="text-center text-gray-600 text-2xl">
           No pets available
         </div>
@@ -36,11 +54,11 @@ const PetListPage = () => {
                 <p className="text-gray-400 mb-4">{pet.breed}</p>
                 <p
                   className={`mb-4 ${
-                    pet.adoptionStatus === "Adopted"
+                    pet.adoptionStatus === "adopted"
                       ? "text-red-500"
-                      : pet.adoptionStatus === "Available"
+                      : pet.adoptionStatus === "available"
                       ? "text-green-500"
-                      : pet.adoptionStatus === "Pending"
+                      : pet.adoptionStatus === "pending"
                       ? "text-orange-500"
                       : "text-gray-400"
                   }`}
@@ -48,7 +66,7 @@ const PetListPage = () => {
                   {pet.adoptionStatus}
                 </p>
                 <Link
-                  to={`/pets/${pet.id}`}
+                  to={`/pets/${pet._id}`}
                   className="block text-center bg-indigo-500 hover:bg-indigo-400 text-white py-2 rounded-lg transition-colors"
                 >
                   View Details

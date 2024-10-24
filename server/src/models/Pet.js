@@ -24,6 +24,10 @@ const PetSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  contact:{
+    type:Number,
+    required:true,
+  },
   adoptionStatus: {
     type: String,
     enum: ['available', 'pending', 'adopted'],

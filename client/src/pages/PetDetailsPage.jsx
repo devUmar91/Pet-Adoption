@@ -1,35 +1,47 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { UserContext } from "../Context/context";
+import axios from "axios";
 
 const PetDetailsPage = () => {
-  const { id } = useParams();
-  const { getPetById } = useContext(UserContext);
+  const { id } = useParams(); // Get the pet id from the URL
+  const [pet, setPet] = useState(null); // State to hold pet details
   const [message, setMessage] = useState(""); // State to hold the user's message
 
-  const pet = getPetById(id);
+  // Fetch the pet details when the component mounts
+  useEffect(() => {
+    const fetchPetDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/pets/${id}`); // Adjust the URL based on your backend
+        setPet(response.data); // Set the pet details
+      } catch (error) {
+        console.error("Error fetching pet details:", error);
+      }
+    };
 
-  if (!pet) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-gray-200 py-12 px-6">
-        <h2 className="text-4xl font-bold text-center text-red-500 mb-12">
-          Pet not found
-        </h2>
-      </div>
-    );
-  }
+    fetchPetDetails();
+  }, [id]); // Runs whenever the id changes
 
   // Function to redirect to WhatsApp with the custom message
   const handleAdoptionRequest = () => {
-    if (pet.contactNumber) {
-      const encodedMessage = encodeURIComponent(`Query about ${pet.name}. ${message}`);
-      const whatsappUrl = `https://wa.me/${pet.contactNumber}?text=${encodedMessage}`;
+    if (pet.contact) { // Assuming the contact number is stored in pet.contact
+      const encodedMessage = encodeURIComponent(`Query about ${pet.name}: ${message}`);
+      const whatsappUrl = `https://wa.me/+92${pet.contact}?text=${encodedMessage}`;
       window.open(whatsappUrl, "_blank");
     } else {
       alert("No contact number available for this pet.");
     }
   };
-  
+
+  // Show a loading state if the pet data is not yet loaded
+  if (!pet) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-gray-200 py-12 px-6">
+        <h2 className="text-4xl font-bold text-center text-red-500 mt-10">
+          Pet not found
+        </h2>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-200 py-[80px] px-6">
@@ -49,9 +61,9 @@ const PetDetailsPage = () => {
             Status:
             <span
               className={
-                pet.adoptionStatus === "Adopted"
+                pet.adoptionStatus === "adopted"
                   ? "text-red-500"
-                  : pet.adoptionStatus === "Pending"
+                  : pet.adoptionStatus === "pending"
                   ? "text-orange-500"
                   : "text-green-500"
               }
@@ -65,23 +77,20 @@ const PetDetailsPage = () => {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Write your message..."
             className={`w-full p-4 mt-4 bg-gray-700 rounded-lg text-gray-200 resize-none h-32 shadow-inner focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              pet.adoptionStatus === "Adopted" ? "opacity-50 cursor-not-allowed" : ""
+              pet.adoptionStatus === "adopted" ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={pet.adoptionStatus === "Adopted"}
+            disabled={pet.adoptionStatus === "adopted"}
           />
           <div className="flex mt-8 space-x-4">
-            {
-              <button
+            <button
               onClick={handleAdoptionRequest}
               className={`bg-indigo-500 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 hover:bg-indigo-600 shadow-lg transform hover:scale-105 ${
-                pet.adoptionStatus === "Adopted" ? "opacity-50 cursor-not-allowed" : ""
+                pet.adoptionStatus === "adopted" ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              disabled={pet.adoptionStatus === "Adopted"}
+              disabled={pet.adoptionStatus === "adopted"}
             >
               Contact on WhatsApp
             </button>
-            
-            }
             <Link
               to="/pets"
               className="bg-indigo-500 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 hover:bg-indigo-600 shadow-lg transform hover:scale-105"

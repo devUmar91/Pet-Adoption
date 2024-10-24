@@ -60,7 +60,8 @@ const Navbar = () => {
           >
             Add a pet
           </Link>
-          {user && (
+          {/* Check if user is logged in and if user has a role */}
+          {user && user.role === 'admin' && (
             <Link
               to="/admin"
               className="text-gray-200 border-b-2 border-t-2 border-transparent hover:border-indigo-400 hover:text-indigo-400 px-3 py-2 rounded-lg transition-all duration-300"
@@ -111,12 +112,11 @@ const Navbar = () => {
             to={user ? "/dashboard" : "#"}
             onClick={handleProtectedClick}
             className="block text-gray-200 py-2 px-4 border-b border-gray-700 hover:bg-gray-700 hover:text-indigo-400 transition duration-300"
-            onClick={toggleMenu}
           >
             Add a pet
           </Link>
 
-          {user && (
+          {user && user.role === 'admin' && (
             <Link
               to="/admin"
               className="block text-gray-200 py-2 px-4 border-b border-gray-700 hover:bg-gray-700 hover:text-indigo-400 transition duration-300"
