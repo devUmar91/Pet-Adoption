@@ -21,6 +21,11 @@ const Navbar = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleLogin=()=>{
+    setShowModal(false)
+    navigate('/login')
+  }
+
   // Show login modal if user is not logged in
   const handleProtectedClick = (e) => {
     if (!user) {
@@ -158,7 +163,7 @@ const Navbar = () => {
 
       {/* Modal for non-logged-in users */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold mb-4">Please Log In</h2>
             <p className="mb-4">You need to log in to access this feature.</p>
@@ -169,9 +174,9 @@ const Navbar = () => {
               >
                 Close
               </button>
-              <Link to="/login" className="bg-green-500 text-white px-4 py-2 rounded-lg">
+              <button onClick={handleLogin} className="bg-green-500 text-white px-4 py-2 rounded-lg">
                 Log In
-              </Link>
+              </button>
             </div>
           </div>
         </div>

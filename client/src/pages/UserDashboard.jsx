@@ -84,6 +84,8 @@ const UserDashboard = () => {
         image: '',
         contact: '',
       });
+      console.log(response);
+      
     } catch (error) {
       console.error("Error submitting pet:", error.response ? error.response.data : error.message);
       alert('Error submitting pet. Please try again later.');
@@ -107,7 +109,7 @@ const UserDashboard = () => {
               name="name"
               value={petDetails.name}
               onChange={handleInputChange}
-              className="w-full p-1 bg-gray-600 text-gray-200 rounded-lg"
+              className="w-full p-1 bg-gray-600 outline-none text-gray-200 rounded-lg"
               required
             />
           </div>
@@ -120,7 +122,7 @@ const UserDashboard = () => {
               name="breed"
               value={petDetails.breed}
               onChange={handleInputChange}
-              className="w-full p-1 bg-gray-600 text-gray-200 rounded-lg"
+              className="w-full p-1 bg-gray-600 outline-none text-gray-200 rounded-lg"
               required
             />
           </div>
@@ -133,7 +135,7 @@ const UserDashboard = () => {
               name="age"
               value={petDetails.age}
               onChange={handleInputChange}
-              className="w-full p-1 bg-gray-600 text-gray-200 rounded-lg"
+              className="w-full p-1 bg-gray-600 outline-none text-gray-200 rounded-lg"
               required
             />
           </div>
@@ -145,7 +147,7 @@ const UserDashboard = () => {
               name="description"
               value={petDetails.description}
               onChange={handleInputChange}
-              className="w-full p-1 h-9 bg-gray-600 text-gray-200 rounded-lg"
+              className="w-full p-1 h-9 bg-gray-600 outline-none text-gray-200 rounded-lg"
               rows="3"
               required
             />
@@ -160,13 +162,14 @@ const UserDashboard = () => {
               value={petDetails.image}
               onChange={handleInputChange}
               placeholder="Enter image URL"
-              className="w-full p-1 bg-gray-600 text-gray-200 rounded-lg mb-2"
+              className="w-full p-1 bg-gray-600 outline-none text-gray-200 rounded-lg mb-2"
             />
+
             <input
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              className="block w-full bg-gray-600 text-gray-200 rounded-lg"
+              className="block w-full bg-gray-600 outline-none text-gray-200 rounded-lg"
             />
           </div>
 
@@ -179,7 +182,7 @@ const UserDashboard = () => {
               value={petDetails.contact}
               onChange={handleInputChange}
               placeholder="Enter WhatsApp number"
-              className="w-full p-1 bg-gray-600 text-gray-200 rounded-lg"
+              className="w-full p-1 bg-gray-600 outline-none text-gray-200 rounded-lg"
               required
             />
           </div>

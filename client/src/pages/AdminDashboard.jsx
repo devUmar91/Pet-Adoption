@@ -104,6 +104,7 @@ const handleRequest = async (requestId) => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(updatedRequests.data);
       setRequests(updatedRequests.data);
       console.log("rejected and updated");
     }

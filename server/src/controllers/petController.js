@@ -111,3 +111,30 @@ export const deletePet = async (req, res) => {
     res.status(500).json({ message: 'Error deleting pet' });
   }
 };
+
+
+// Controller to get pets of the logged-in user
+export const getMyPets = async (req, res) => {
+  try {
+    // Assuming the user's contact information is available in the request (from JWT token or session)
+    const userEmail = req.user?.email; // Assuming the contact is in req.user, adjust as necessary
+
+    if (!userEmail) {
+      return res.status(400).json({ message: 'User contact is required' });
+    }
+
+    // Find all pets associated with the user's contact
+    const userPets = await Pet.find({ email: userEmail });
+
+    // Check if any pets were found
+    if (!userPets.length) {
+      return res.status(404).json({ message: 'No pets found for this user' });
+    }
+
+    // Return the pets associated with the user
+    res.json(userPets);
+  } catch (err) {
+    console.error('Error fetching user pets:', err);
+    res.status(500).json({ message: 'Error fetching user pets', error: err.message });
+  }
+};

@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Navbar from './components/Navbar';
+import Footer from './components/footer';
 
   
   
@@ -36,6 +37,7 @@ function App() {
           {/* <Route path="/petform" element={<PetForm />} /> */}
           
         </Routes>
+        <Footer/>
       </div>
     </Router>
     </UserProvider>

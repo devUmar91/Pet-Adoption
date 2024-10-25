@@ -9,7 +9,6 @@ const router = express.Router();
 router.get('/pending-posts', verifyAdmin, getPendingPosts);
 
 
-
 // Route to approve a pending post
 router.put('/approve/:postId', verifyAdmin, approvePet);
 
