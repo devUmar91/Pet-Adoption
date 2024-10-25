@@ -45,7 +45,7 @@ const PetDetailsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-200 py-[80px] px-6">
-      <div className="flex flex-col md:flex-row items-center bg-gray-800 p-6 rounded-lg shadow-lg">
+      <div className="flex flex-col md:flex-row items-center bg-gray-800 mt-10 p-6 rounded-lg shadow-lg">
         <img
           src={pet.image}
           alt={pet.name}

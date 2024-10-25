@@ -153,3 +153,37 @@
       res.status(500).json({ message: 'Error fetching users', error: error.message });
     }
   };
+
+
+  // Import necessary models
+
+
+// Delete a pet by ID, only accessible to admin
+export const deletePet = async (req, res) => {
+  const { postId } = req.params; // ID of the pet to delete
+  console.log(postId);
+  try {
+    // Find the pet by its ID
+    const pet = await Pet.findByIdAndDelete(postId);
+    if (!pet) {
+      return res.status(404).json({ message: 'Pet not found' });
+    }
+
+    // Delete the pet from the database
+    // await pet.remove();
+
+    // Notify the pet's owner (if applicable)
+    // const owner = await User.findById(pet._id); // Assuming `ownerId` is stored in the `Pet` model
+    // if (owner) {
+    //   await owner.notifications.push({
+    //     message: `Your pet "${pet.name}" has been deleted by an admin.`,
+    //   });
+    //   await owner.save();
+    // }
+
+    res.status(200).json({ message: 'Pet successfully deleted' });
+  } catch (error) {
+    console.error("Error deleting pet:", error);
+    res.status(500).json({ message: 'Error deleting pet', error: error.message });
+  }
+};
