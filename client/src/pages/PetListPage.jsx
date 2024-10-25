@@ -2,6 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../Context/context";
 import axios from 'axios';
+import "flyonui/flyonui"
+import "flyonui/dist/js/accordion"
+
 
 const PetListPage = () => {
   const { user } = useContext(UserContext); // Get user role
@@ -56,13 +59,18 @@ const PetListPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-200 text-gray-800 px-6 pt-24">
-      <h2 className="text-4xl font-extrabold text-center mb-12 tracking-wide">
+      {/* <h2 className="text-4xl font-extrabold text-center mb-12 tracking-wide">
         Available Pets
-      </h2>
+      </h2> */}
 
       {pets?.length === 0 ? (
-        <div className="text-center text-gray-600 text-2xl">No pets available</div>
-      ) : (
+      <div className="flex  flex-col items-center mt-[150px] justify-center">   
+        {/* <span class="loading loading-spinner loading-xs"></span>
+        <span class="loading loading-spinner loading-sm"></span>
+        <span class="loading loading-spinner"></span> */}
+        <p className="text-2xl font-bold font-sans text-gray-600">Loading pets</p>
+        <span class="loading loading-ring loading-lg"></span>
+        </div> ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {pets.map((pet) => (
             <div
@@ -73,7 +81,7 @@ const PetListPage = () => {
               <div className="p-4">
                 <h3 className="text-2xl font-bold text-gray-100 mb-2">{pet.name}</h3>
                 <p className="text-gray-400 mb-4">{pet.breed}</p>
-                <p className={`mb-4 ${pet.adoptionStatus === "adopted" ? "text-red-500" : pet.adoptionStatus === "available" ? "text-green-500" : pet.adoptionStatus === "pending" ? "text-orange-500" : "text-gray-400"}`}>
+                <p className={`mb-4 ${pet.adoptionStatus === "Adopted" ? "text-red-500" : pet.adoptionStatus === "Available" ? "text-green-500" : pet.adoptionStatus === "Pending" ? "text-orange-500" : "text-gray-400"}`}>
                   {pet.adoptionStatus}
                 </p>
                 

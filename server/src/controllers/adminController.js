@@ -124,23 +124,34 @@
   // };
   
 
+
   export const rejectPet = async (req, res) => {
     const { postId } = req.params;
-
+  
     try {
-      // Find the pet and delete it
-      await Pet.findByIdAndDelete(postId);
-
-      // Remove the pet from admin's pending posts
+      // Fetch the admin
       const admin = await Admin.findOne();
-      admin.pendingPosts = admin.pendingPosts.filter(post => post.toString() !== postId);
-      await admin.save();
-
-      res.status(200).json({ message: 'Pet rejected and deleted' });
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+  
+      // Remove the pet from pending posts
+      admin.pendingPosts = admin.pendingPosts.filter(
+        (post) => post._id.toString() !== postId.toString()
+      );
+      
+      await admin.save(); // Save the updated admin document
+  
+      res.status(200).json({ message: "Pet rejected and removed from pending posts" });
     } catch (error) {
-      res.status(500).json({ message: 'Error rejecting the pet' });
+      console.error("Error rejecting the pet:", error);
+      res.status(500).json({ message: "Error rejecting the pet" });
     }
   };
+  
+
+  
+  
 
   import User from '../models/User.js'; // Import your User model
 

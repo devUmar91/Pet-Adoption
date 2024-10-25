@@ -77,23 +77,30 @@ const AdminDashboard = () => {
           )
         );
       } else if (actionType === 'reject') {
-        await axios.delete(`http://localhost:3000/admin/reject/${requestId}`, {
+        const res = await axios.delete(`http://localhost:3000/admin/reject/${requestId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        const updatedRequests = await axios.get('http://localhost:3000/admin/pending-posts', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setRequests(updatedRequests.data);
+        console.log(res); // Check the response
+  
+        if (res.status === 200) {
+          const updatedRequests = await axios.get('http://localhost:3000/admin/pending-posts', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setRequests(updatedRequests.data);
+        } else {
+          console.error("Failed to reject the request.");
+        }
       }
     } catch (error) {
       console.error(`Error ${actionType === 'approve' ? 'approving' : 'rejecting'} request:`, error);
+      // Consider displaying an error message to the user
     }
   };
+  
 
   const openModal = (request, action) => {
     setSelectedRequest(request);

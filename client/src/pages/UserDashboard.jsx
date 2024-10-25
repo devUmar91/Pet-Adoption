@@ -128,13 +128,13 @@ const UserDashboard = () => {
           <h2 className="text-3xl font-bold text-indigo-400 mb-4 text-center">Add a Pet</h2>
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <div>
-              <label className="block text-gray-300 mb-1">Pet Name:</label>
+              <label className="block text-gray-300  mb-1">Pet Name:</label>
               <input
                 type="text"
                 name="name"
                 value={petDetails.name}
                 onChange={handleInputChange}
-                className="w-full p-2 bg-gray-600 outline-none text-gray-200 rounded-lg"
+                className="w-full p-2 capitalize bg-gray-600 outline-none text-gray-200 rounded-lg"
                 required
               />
             </div>
@@ -145,7 +145,7 @@ const UserDashboard = () => {
                 name="breed"
                 value={petDetails.breed}
                 onChange={handleInputChange}
-                className="w-full p-2 bg-gray-600 outline-none text-gray-200 rounded-lg"
+                className="w-full p-2 bg-gray-600 capitalize outline-none text-gray-200 rounded-lg"
                 required
               />
             </div>
