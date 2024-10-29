@@ -5,6 +5,8 @@ import Pet from "../models/Pet.js";
 export const getPets = async (req, res) => {
   try {
     const pets = await Pet.find();
+    // const pets = await Pet.find({ city: /^lahore$/i }); // Hard-coded to find pets in Lahore, case-insensitive
+
     res.json(pets);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching pets' });
@@ -47,48 +49,148 @@ export const getPetById = async (req, res) => {
 //   }
 // }
 
-  // new code
+  // Working code
+
+  // export const createPet = async (req, res) => {
+  //   const { name, breed, age, description, image, contact, city, category } = req.body;
+  //   const userId = req.user.id; // Ensure your token includes the user ID
+  
+  //   if (!name || !breed || !age || !description || !image || !city || !category) {
+  //     return res.status(400).json({ message: 'All fields are required' });
+  //   }
+  
+  //   try {
+  //     const newPet = {
+  //       name,
+  //       breed,
+  //       age,
+  //       description,
+  //       image,
+  //       contact,
+  //       city,
+  //       category,
+  //       adoptionStatus: 'pending',
+  //       userId,
+  //     };
+  
+  //     const admin = await Admin.findOne(); // Get the admin document
+  //     if (admin) {
+  //       admin.pendingPosts.push(newPet);
+  //       await admin.save();
+  //       res.status(201).json({ message: 'Pet submitted for approval' });
+  //     } else {
+  //       res.status(404).json({ message: 'Admin not found' });
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     res.status(500).json({ message: 'Error creating pet', error: err.message });
+  //   }
+  // };
+  
+
+  // new Code 
 
   export const createPet = async (req, res) => {
-    const { name, breed, age, description, image,contact } = req.body;
-    
-    if (!name || !breed || !age || !description || !image) {
-      return res.status(400).json({ message: 'All fields are required' });
+    const { name, breed, age, description, images, contact, city, category } = req.body; // Ensure city and category are included
+    const userId = req.user.id;
+
+    if (!name || !breed || !age || !description || !images || !contact || !city || !category) {
+        return res.status(400).json({ message: 'All fields are required' });
     }
 
     try {
-      const newPet = ({
-        name,
-        breed,
-        age,
-        description,
-        image,
-        contact,
-        adoptionStatus: 'pending',
-      });
-  
-      const admin = await Admin.findOne(); // Get the admin document
-      if (admin) {
-        admin.pendingPosts.push({
-          name: newPet.name,
-          breed: newPet.breed,
-          age: newPet.age,
-          description: newPet.description,
-          image: newPet.image,
-          contact: newPet.contact, // Make sure to include contact if required
-          adoptionStatus: newPet.adoptionStatus,
-        });
-        await admin.save();
-      } else {
-        return res.status(404).json({ message: 'Admin not found' });
-      }
-  
-      res.status(201).json({ message: 'Pet submitted for approval' });
+        const newPet = {
+            name,
+            breed,
+            age,
+            description,
+            images: images.length ? images : ["https://via.placeholder.com/150"],
+            contact: Number(contact),  // Ensure this is a number
+            city,                      // This should be defined
+            category,                  // This should be defined
+            adoptionStatus: 'pending',
+            userId,
+        };
+
+        console.log("New Pet Object:", newPet);
+
+        const admin = await Admin.findOne();
+        if (admin) {
+            console.log("Admin Before Adding Pet:", admin);
+
+            // Push the newPet object directly
+            admin.pendingPosts.push(newPet);
+
+            await admin.save();
+            console.log("Admin After Save:", admin);
+            res.status(201).json({ message: 'Pet submitted for approval' });
+        } else {
+            return res.status(404).json({ message: 'Admin not found' });
+        }
+
     } catch (err) {
-      console.error(err); // Log the actual error for debugging
-      res.status(500).json({ message: 'Error creating pet', error: err.message });
+        console.error("Error in createPet:", err);
+        res.status(500).json({ message: 'Error creating pet', error: err.message });
+    }
+};
+
+  
+  export const getFilteredPets = async (req, res) => {
+    const { city, category } = req.query;
+  console.log(city);
+      
+  
+    const filter = {};
+    if (city) filter.city = city;
+    if (category) filter.category = category;
+  
+    try {
+      const pets = await Pet.find(filter);
+      res.status(200).json(pets);
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching filtered pets', error: err.message });
     }
   };
+  
+
+ 
+  
+ // controllers/petsController.js
+// import Pet from "../models/Pet.js";
+
+// export const getByCity = async (req, res) => {
+//   const { city } = req.query;
+//    console.log(city);
+   
+//   try {
+//     const pets = await Pet.find({ city: new RegExp(`^${city}$`, "i") }); // Case-insensitive match
+//     res.status(200).json(pets);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error fetching pets by city'});
+//   }
+// };
+
+
+export const getByCity = async (req, res) => {
+  const { city } = req.query; // Get the city parameter from the query string
+
+  try {
+    let query = {}; // Initialize an empty query
+
+    // If a city is provided, add it to the query (case-insensitive)
+    if (city) {
+      query.city = new RegExp(`^${city}$`, "i"); // Using a regex for case-insensitivity
+    }
+
+    const pets = await Pet.find({ city: query.city}); // Hard-coded to find pets in Lahore, case-insensitive
+    res.json(pets);
+  } catch (err) {
+    console.error("Error fetching pets:", err);
+    res.status(500).json({ message: 'Error fetching pets' });
+  }
+};
+
+  
   
   
   

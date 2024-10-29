@@ -5,7 +5,7 @@ export const protect = (req, res, next) => {
   // Check for token in cookies or in the Authorization header
   let token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
-  console.log('Token:', token);
+  // console.log('Token:', token);
   
   if (!token) {
     return res.status(401).json({ message: 'Not authorized, no token' });
@@ -14,7 +14,7 @@ export const protect = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "5347");
     req.user = decoded;
-    console.log('User:', req.user);
+    // console.log('User:', req.user);
     
     next();
   } catch (error) {
@@ -33,7 +33,7 @@ export const verifyAdmin = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "5347");
-     console.log(decoded);
+    //  console.log(decoded);
 
     req.user = decoded;
 

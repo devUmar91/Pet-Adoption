@@ -13,6 +13,7 @@ const AdminDashboard = () => {
   const [selectedRequest, setSelectedRequest] = useState([]);
   const [actionType, setActionType] = useState('');
 
+
   useEffect(() => {
     const fetchedToken = Cookies.get('token');
     if (fetchedToken) {
@@ -20,11 +21,17 @@ const AdminDashboard = () => {
     }
   }, []);
 
+  console.log(user);
+  
+
   useEffect(() => {
-    if (!user) {
-      console.error('User is not authenticated.');
-      return;
-    }
+    // if (!user) {
+    //   console.error('User is not authenticated.');
+    //   return;
+    // }
+
+    // console.log(user);
+    
 
     const fetchPendingPosts = async () => {
       try {
@@ -76,6 +83,7 @@ const AdminDashboard = () => {
             request._id === requestId ? { ...request, adoptionStatus: 'Approved' } : request
           )
         );
+        window.location.reload()
       } else if (actionType === 'reject') {
         const res = await axios.delete(`http://localhost:3000/admin/reject/${requestId}`, {
           headers: {
@@ -170,19 +178,27 @@ const AdminDashboard = () => {
 
       {/* Confirmation Modal */}
       {showModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50  z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg   w-[40%]">
       <h3 className="text-lg font-semibold mb-4 text-gray-700">Confirm Action</h3>
       <p>Are you sure you want to {actionType} the request for <strong>{selectedRequest?.name}</strong>?</p>
       <div className="mt-4">
         <h4 className="text-md font-semibold text-gray-700">Pet Details:</h4>
-        {selectedRequest?.image && (
-          <img 
-            src={selectedRequest.image} 
-            alt={`${selectedRequest.name} image`} 
-            className="w-full h-48 object-cover rounded-md mb-4" 
-          />
+
+        {/* Display multiple images */}
+        {selectedRequest?.images?.length > 0 ? (
+          selectedRequest.images.map((image, index) => (
+            <img 
+              key={index}
+              src={image} 
+              alt={`${selectedRequest.name} image ${index + 1}`} 
+              className="w-38 h-28 object-cover rounded-md mb-4" 
+            />
+          ))
+        ) : (
+          <p>No images available for this pet.</p>
         )}
+
         <p><strong>Name:</strong> {selectedRequest?.name}</p>
         <p><strong>Age:</strong> {selectedRequest?.age}</p>
         <p><strong>Breed:</strong> {selectedRequest?.breed}</p>
@@ -210,6 +226,7 @@ const AdminDashboard = () => {
     </div>
   </div>
 )}
+
 
     </div>
   );

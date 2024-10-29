@@ -4,16 +4,23 @@ const postSchema = new mongoose.Schema({
     breed: { type: String, required: true },
     age: { type: String, required: true },
     description: { type: String, required: true },
-    image: { type: String, required: true },
-    contact: { type: String,required:true},
+    images: { 
+        type: [String],  // Array of strings
+        // required: true 
+    },    
+       // Array for multiple images
+    contact: { type: Number, required: true },
+    city: { type: String, }, // New field for city
+    category: { type: String,  }, // New field for category
     adoptionStatus: {
-        type: String,
-        enum: ['available', 'pending', 'adopted'],
-        default: 'available',
-    },
-});
+      type: String,
+      enum: ['available', 'pending', 'adopted'],
+      default: 'available',
+    }
+  });
 
-const adminSchema = new mongoose.Schema({
+
+   const adminSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -32,5 +39,5 @@ const adminSchema = new mongoose.Schema({
     pendingPosts: [postSchema] // Reference to the post schema
 });
 
-  const Admin = mongoose.model('Admin', adminSchema);
+const Admin = mongoose.model('Admin', adminSchema);
 export default Admin;

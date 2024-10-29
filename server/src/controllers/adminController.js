@@ -24,48 +24,121 @@
     }
   };
     // Working logic
-  export const approvePet = async (req, res) => {
-    const { postId } = req.params;
-
-    try {
-      // Find the admin to get the pending post
-      const admin = await Admin.findOne();
-      if (!admin) {
-        return res.status(404).json({ message: 'Admin not found' });
-      }
-
-      // Find the post in the admin's pending posts
-      const postIndex = admin.pendingPosts.findIndex(post => post._id.toString() === postId);
-      if (postIndex === -1) {
-        return res.status(404).json({ message: 'Post not found in pending posts' });
-      }
-
-      // Extract the post details
-      const petDetails = admin.pendingPosts[postIndex];
-
-      // Create a new Pet document with the approved details
-      const newPet = await Pet.create({
-        name: petDetails.name,
-        breed: petDetails.breed,
-        age: petDetails.age,
-        description: petDetails.description,
-        image: petDetails.image,
-        contact: petDetails.contact, // Ensure this is included
-        adoptionStatus: 'available', // Approve pet
-      });
-
+    // export const approvePet = async (req, res) => {
+    //   const { postId } = req.params;
+    
+    //   try {
+    //     // Find the admin to get the pending post
+    //     const admin = await Admin.findOne();
+    //     if (!admin) {
+    //       return res.status(404).json({ message: 'Admin not found' });
+    //     }
+    
+    //     // Find the post in the admin's pending posts
+    //     const postIndex = admin.pendingPosts.findIndex(post => post._id.toString() === postId);
+    //     if (postIndex === -1) {
+    //       return res.status(404).json({ message: 'Post not found in pending posts' });
+    //     }
+    
+    //     // Extract the post details
+    //     const petDetails = admin.pendingPosts[postIndex];
+    //     console.log("In Admin controller, User ID:", petDetails);
+    
+    //     // Create a new Pet document with the approved details
+    //     const newPet = await Pet.create({
+    //       name: petDetails.name,
+    //       breed: petDetails.breed,
+    //       age: petDetails.age,
+    //       description: petDetails.description,
+    //       image: petDetails.image,
+    //       contact: petDetails.contact,
+    //       adoptionStatus: 'available',
+    //       // userId: petDetails.userId,
+    //     });
+    
+    //     // Find the user and add pet ID to their posts array
+    //     const user = await User.findById(petDetails.userId);
+    //     if (!user) {
+    //       return res.status(404).json({ message: 'User not found' });
+    //     }
+    
+    //     user.pets.push(newPet); // Add the new pet to the user's pets array
+    //     await user.save();
+    
+    //     // Remove the post from the admin's pending posts
+    //     admin.pendingPosts.splice(postIndex, 1);
+    //     await admin.save();
+    
+    //     res.status(200).json({ message: 'Pet approved and is now available for adoption', pet: newPet });
+    //   } catch (error) {
+    //     console.error(error); // Log the error for debugging
+    //     res.status(500).json({ message: 'Error approving the pet', error: error.message });
+    //   }
+    // };
+    
+    // New code
+    export const approvePet = async (req, res) => {
+      const { postId } = req.params;
+      console.log('Post ID:', postId); // Log the postId for debugging
       
-      // Remove the post from the admin's pending posts
-      admin.pendingPosts.splice(postIndex, 1); // Remove the post from the array
-      await admin.save();
+      try {
+        const admin = await Admin.findOne();
+        
+        if (!admin) {
+          return res.status(404).json({ message: 'Admin not found' });
+        }
+    
+        const postIndex = admin.pendingPosts.findIndex(post => post._id.toString() === postId);
+    
+        if (postIndex === -1) {
+          return res.status(404).json({ message: 'Post not found in pending posts' });
+        }
+    
+        const petDetails = admin.pendingPosts[postIndex];
+        console.log('Pet Details to Approve:', petDetails); // Log the pet details for debugging
+    
+        // Ensure all required fields are present
+        if (!petDetails.name || !petDetails.breed || !petDetails.age || !petDetails.description || 
+            !petDetails.images || !petDetails.contact || !petDetails.city || !petDetails.category) {
+          return res.status(400).json({ message: 'Missing required pet details' });
+        }
 
-      res.status(200).json({ message: 'Pet approved and is now available for adoption', pet: newPet });
-    } catch (error) {
-      console.error(error); // Log the error for debugging
-      res.status(500).json({ message: 'Error approving the pet', error: error.message });
-    }
-  };
-
+        // res.json({petDetails})
+    
+        const newPet = await Pet.create({
+          name: petDetails.name,
+          breed: petDetails.breed,
+          age: petDetails.age,
+          description: petDetails.description,
+          images: petDetails.images,  // Ensure images is an array of strings
+          contact: petDetails.contact,
+          city: petDetails.city,
+          category: petDetails.category,
+          adoptionStatus: 'available',
+          userId: petDetails.userId,  // if available in petDetails
+        });
+        
+        console.log('New Pet Created:', newPet); // Log the newly created pet
+    
+        // Optionally update user’s pet list (if applicable)
+        // const user = await User.findById(petDetails.userId);
+        // if (user) {
+        //   user.pets.push(newPet);
+        //   await user.save();
+        // }
+    
+        // Remove from pending posts
+        admin.pendingPosts.splice(postIndex, 1);
+        await admin.save();
+    
+        res.status(200).json({ message: 'Pet approved and now available for adoption', pet: newPet });
+      } catch (error) {
+        console.error('Error in approvePet:', error); // Log the error for debugging
+        res.status(500).json({ message: 'Error approving the pet', error: error.message });
+      }
+    };
+    
+    
 
 
 
