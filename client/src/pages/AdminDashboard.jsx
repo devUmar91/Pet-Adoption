@@ -178,8 +178,8 @@ const AdminDashboard = () => {
 
       {/* Confirmation Modal */}
       {showModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50  z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg   w-[40%]">
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-[70%] md:w-[60%] max-h-[80%] overflow-auto">
       <h3 className="text-lg font-semibold mb-4 text-gray-700">Confirm Action</h3>
       <p>Are you sure you want to {actionType} the request for <strong>{selectedRequest?.name}</strong>?</p>
       <div className="mt-4">
@@ -187,17 +187,20 @@ const AdminDashboard = () => {
 
         {/* Display multiple images */}
         {selectedRequest?.images?.length > 0 ? (
-          selectedRequest.images.map((image, index) => (
-            <img 
-              key={index}
-              src={image} 
-              alt={`${selectedRequest.name} image ${index + 1}`} 
-              className="w-38 h-28 object-cover rounded-md mb-4" 
-            />
-          ))
-        ) : (
-          <p>No images available for this pet.</p>
-        )}
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-4"> {/* Adjust the number of columns based on screen size */}
+    {selectedRequest.images.map((image, index) => (
+      <img 
+        key={index}
+        src={image} 
+        alt={`${selectedRequest.name} image ${index + 1}`} 
+        className="w-full h-34 object-cover rounded-md" // Make the width full within the grid cell
+      />
+    ))}
+  </div>
+) : (
+  <p>No images available for this pet.</p>
+)}
+
 
         <p><strong>Name:</strong> {selectedRequest?.name}</p>
         <p><strong>Age:</strong> {selectedRequest?.age}</p>
@@ -226,6 +229,7 @@ const AdminDashboard = () => {
     </div>
   </div>
 )}
+
 
 
     </div>

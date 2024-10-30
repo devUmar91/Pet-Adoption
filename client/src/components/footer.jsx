@@ -56,7 +56,7 @@ function footer() {
     </div>
   
     {/* <!-- Bottom Note --> */}
-    <div class="mt-1 border-t border-gray-600 pt-4 mb-[-25px]">
+    <div class="mt-1 border-t border-gray-600 pt-4 mb-[-35px]">
       <p class="text-center text-gray-400 text-sm">&copy; 2024 PetPal. All Rights Reserved.</p>
     </div>
   </footer></div>

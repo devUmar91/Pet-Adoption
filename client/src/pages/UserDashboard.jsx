@@ -18,6 +18,22 @@ const UserDashboard = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [token, setToken] = useState('');
+  // const [customCategory, setCustomCategory] = useState('');
+  // const [useCustomCategory, setUseCustomCategory] = useState(false);
+
+  const predefinedCategories = [
+    'Dog',
+    'Cat',
+    'Bird',
+    'Reptile',
+    'Small Animal',
+    'Fish',
+    'Horse',
+    'Farm Animal',
+    'Rodent',
+    'Exotic Animal',
+    'Insect',
+  ];
 
   useEffect(() => {
     const fetchedToken = Cookies.get('token');
@@ -39,6 +55,14 @@ const UserDashboard = () => {
     const { name, value } = e.target;
     setPetDetails({ ...petDetails, [name]: value });
   };
+
+  const handleCategoryChange = (e) => {
+    setPetDetails({ ...petDetails, category: e.target.value });
+    setUseCustomCategory(false); // Disables custom category when a predefined one is selected
+    setCustomCategory(''); // Resets custom category input
+  };
+
+  
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -74,8 +98,8 @@ const UserDashboard = () => {
     }
 
     setIsSubmitting(true);
-    console.log("loggin before submit",petDetails);
-    
+    console.log("loggin before submit", petDetails);
+
     try {
       const response = await axios.post(
         'http://localhost:3000/pets/post',
@@ -94,6 +118,8 @@ const UserDashboard = () => {
         category: '',
         images: [],
       });
+
+      
     } catch (error) {
       console.error("Error submitting pet:", error);
       alert('Error submitting pet. Please try again later.');
@@ -191,50 +217,58 @@ const UserDashboard = () => {
             </div>
             <div>
               <label className="block capitalize text-gray-300 mb-1">Category:</label>
-              <input
-                type="text"
-                name="category"
+              <select
                 value={petDetails.category}
-                onChange={handleInputChange}
+                onChange={handleCategoryChange}
                 className="w-full p-2 capitalize bg-gray-600 outline-none text-gray-200 rounded-lg"
-                required
-              />
+              >
+                <option value="" disabled>Select a category</option>
+                {predefinedCategories.map((category) => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
             </div>
+
+            
+
             <div>
               <label className="block text-gray-300 mb-1">Description:</label>
               <textarea
                 name="description"
                 value={petDetails.description}
                 onChange={handleInputChange}
-                className="w-full p-2 capitalize bg-gray-600 outline-none text-gray-200 rounded-lg"
+                className="w-full p-2 bg-gray-600 outline-none text-gray-200 rounded-lg"
                 required
-              />
+              ></textarea>
             </div>
+
             <div>
               <label className="block text-gray-300 mb-1">Contact:</label>
               <input
-                type="number"
+                type="tel"
                 name="contact"
                 value={petDetails.contact}
                 onChange={handleInputChange}
-                className="w-full p-2  bg-gray-600 outline-none text-gray-200 rounded-lg"
+                className="w-full p-2 bg-gray-600 outline-none text-gray-200 rounded-lg"
                 required
               />
             </div>
+
             <div>
-              <label className="block text-gray-300 mb-1">Images:</label>
+              <label className="block text-gray-300 mb-1">Upload Images:</label>
               <input
                 type="file"
+                onChange={handleFileChange}
                 multiple
                 accept="image/*"
-                onChange={handleFileChange}
-                className="w-full p-2  bg-gray-600 outline-none text-gray-200 rounded-lg"
+                className="block text-gray-300 bg-gray-600 outline-none rounded-lg"
               />
             </div>
+
             <button
               type="submit"
-              className="w-full bg-indigo-500 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-300 hover:bg-indigo-600"
               disabled={isSubmitting}
+              className={`w-full py-2 text-lg font-semibold ${isSubmitting ? 'bg-gray-400' : 'bg-indigo-500'} text-white rounded-lg`}
             >
               {isSubmitting ? 'Submitting...' : 'Add Pet'}
             </button>
