@@ -5,8 +5,6 @@ import Pet from "../models/Pet.js";
 export const getPets = async (req, res) => {
   try {
     const pets = await Pet.find();
-    // const pets = await Pet.find({ city: /^lahore$/i }); // Hard-coded to find pets in Lahore, case-insensitive
-
     res.json(pets);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching pets' });
@@ -25,75 +23,15 @@ export const getPetById = async (req, res) => {
   }
 };
 
-  //  old code
-// export const createPet = async (req, res) => {
-//   const { name, breed, age, description, image, adoptionStatus, adminEmail } = req.body;
+ 
 
-//   try {
-//     const admin = await admin.findOne({ email: adminEmail });
-//     console.log(admin)
-//     if (!admin) {
-//       return res.status(404).json({ message: 'Admin not found' });
-//     }
-
-//     const pendingPost = { name, breed, age, description, image, adoptionStatus };
-
-//     // Add post to admin's pendingPosts
-//     admin.pendingPosts.push(pendingPost);
-
-//     await admin.save();
-
-//     res.status(201).json({ message: 'Post sent to admin for approval' });
-//   } catch (err) {
-//     res.status(500).json(err.message);
-//   }
-// }
-
-  // Working code
-
-  // export const createPet = async (req, res) => {
-  //   const { name, breed, age, description, image, contact, city, category } = req.body;
-  //   const userId = req.user.id; // Ensure your token includes the user ID
-  
-  //   if (!name || !breed || !age || !description || !image || !city || !category) {
-  //     return res.status(400).json({ message: 'All fields are required' });
-  //   }
-  
-  //   try {
-  //     const newPet = {
-  //       name,
-  //       breed,
-  //       age,
-  //       description,
-  //       image,
-  //       contact,
-  //       city,
-  //       category,
-  //       adoptionStatus: 'pending',
-  //       userId,
-  //     };
-  
-  //     const admin = await Admin.findOne(); // Get the admin document
-  //     if (admin) {
-  //       admin.pendingPosts.push(newPet);
-  //       await admin.save();
-  //       res.status(201).json({ message: 'Pet submitted for approval' });
-  //     } else {
-  //       res.status(404).json({ message: 'Admin not found' });
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //     res.status(500).json({ message: 'Error creating pet', error: err.message });
-  //   }
-  // };
-  
-
-  // new Code 
+ 
 
   export const createPet = async (req, res) => {
     const { name, breed, age, description, images, contact, city, category } = req.body; // Ensure city and category are included
     const userId = req.user.id;
-
+     console.log(userId);
+     
     if (!name || !breed || !age || !description || !images || !contact || !city || !category) {
         return res.status(400).json({ message: 'All fields are required' });
     }
@@ -136,62 +74,72 @@ export const getPetById = async (req, res) => {
 
   
   export const getFilteredPets = async (req, res) => {
-    const { city, category } = req.query;
-  console.log(city);
+    const { city } = req.body;
+    console.log(city);
       
   
-    const filter = {};
-    if (city) filter.city = city;
-    if (category) filter.category = category;
+    // const filter = {};
+    // if (city) filter.city = city;
+    // if (category) filter.category = category;
   
-    try {
-      const pets = await Pet.find(filter);
-      res.status(200).json(pets);
-    } catch (err) {
-      res.status(500).json({ message: 'Error fetching filtered pets', error: err.message });
-    }
+    // try {
+    //   const pets = await Pet.find(filter);
+    //   res.status(200).json(pets);
+    // } catch (err) {
+    //   res.status(500).json({ message: 'Error fetching filtered pets', error: err.message });
+    // }
   };
   
 
  
   
- // controllers/petsController.js
-// import Pet from "../models/Pet.js";
 
-// export const getByCity = async (req, res) => {
-//   const { city } = req.query;
-//    console.log(city);
-   
-//   try {
-//     const pets = await Pet.find({ city: new RegExp(`^${city}$`, "i") }); // Case-insensitive match
-//     res.status(200).json(pets);
-//   } catch (error) {
-//     res.status(500).json({ message: 'Error fetching pets by city'});
-//   }
-// };
+// Route
+// router.post('/filteredByCity', getByCity);
 
-
+// Controller
 export const getByCity = async (req, res) => {
-  const { city } = req.query; // Get the city parameter from the query string
+  const { city } = req.body; // Get city from the body
+  if (!city) {
+    return res.status(400).json({ message: 'City is required' });
+  }
 
   try {
-    let query = {}; // Initialize an empty query
-
-    // If a city is provided, add it to the query (case-insensitive)
-    if (city) {
-      query.city = new RegExp(`^${city}$`, "i"); // Using a regex for case-insensitivity
-    }
-
-    const pets = await Pet.find({ city: query.city}); // Hard-coded to find pets in Lahore, case-insensitive
-    res.json(pets);
-  } catch (err) {
-    console.error("Error fetching pets:", err);
-    res.status(500).json({ message: 'Error fetching pets' });
+    const pets = await Pet.find({ city: new RegExp(`^${city}$`, "i") }); // Case-insensitive match
+    res.status(200).json(pets);
+  } catch (error) {
+    console.error("Error fetching pets by city:", error);
+    res.status(500).json({ message: 'Error fetching pets by city' });
   }
 };
 
-  
-  
+
+export const getAllCitiesAndCategories = async (req, res) => {
+  try {
+    const cities = await Pet.aggregate([
+      { $group: { _id: "$city" } },
+      { $sort: { _id: 1 } }, // Sort alphabetically, optional
+    ]);
+
+    const categories = await Pet.aggregate([
+      { $group: { _id: "$category" } },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // Map the result to return only the values in a cleaner format
+    const cityList = cities.map((item) => item._id);
+    const categoryList = categories.map((item) => item._id);
+
+    res.status(200).json({ cities: cityList, categories: categoryList });
+  } catch (error) {
+    console.error("Error fetching cities and categories:", error);
+    res.status(500).json({ message: "Error fetching cities and categories" });
+  }
+};
+
+
+
+
   
   
 

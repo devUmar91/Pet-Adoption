@@ -47,8 +47,18 @@ const PetDetailsPage = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-200 py-[80px] px-6">
       <div className="flex flex-col md:flex-row items-center bg-gray-800 mt-10 p-6 rounded-lg shadow-lg">
+
+        
+        {pet.images?.map((image)=>{
+          return  <img
+            src={pet.image}
+            alt={pet.name}
+            className=" object-cover rounded-lg mb-8 md:mb-0 shadow-md"
+          />
+              
+        })}
         <img
-          src={pet.image}
+          src={pet.images[0]}
           alt={pet.name}
           className="w-full md:w-1/2 h-72 object-cover rounded-lg mb-8 md:mb-0 shadow-md"
         />
@@ -87,7 +97,7 @@ const PetDetailsPage = () => {
             />
           )}
           <div className="flex mt-8 space-x-4">
-            {(!user) && (
+            {!user && (
               <button
                 onClick={handleAdoptionRequest}
                 className={`bg-indigo-500 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 hover:bg-indigo-600 shadow-lg transform hover:scale-105 ${

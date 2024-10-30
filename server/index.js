@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import connectDB from './src/config/db.js';
 import bodyParser from 'body-parser'; // Only necessary if using extended options
 import authRoutes from './src/routes/authRoutes.js';
-import petRoutes from './src/routes/petRoutes.js';
+import petRoutes from "./src/routes/petRoutes.js"
 import adminRoutes from './src/routes/adminRoutes.js';
 import cookieParser from 'cookie-parser';
 // import errorHandler from './src/utils/errorHandler.js'; // Uncomment if needed

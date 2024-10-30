@@ -15,7 +15,7 @@ const PetSchema = new mongoose.Schema({
     enum: ['available', 'pending', 'adopted'],
     default: 'available',
   },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Automatically reference the User model
+  // userId: { type: mongoose.Schema.Types.ObjectId, ref: 'postUser' }, // Automatically reference the User model
   city: { type: String,  },
   category: { type: String, }
 });
