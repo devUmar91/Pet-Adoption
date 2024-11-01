@@ -75,7 +75,8 @@
     //     res.status(500).json({ message: 'Error approving the pet', error: error.message });
     //   }
     // };
-    
+
+
     // New code
     export const approvePet = async (req, res) => {
       const { postId } = req.params;
@@ -121,11 +122,11 @@
         console.log('New Pet Created:', newPet); // Log the newly created pet
     
         // Optionally update user’s pet list (if applicable)
-        // const user = await User.findById(petDetails.userId);
-        // if (user) {
-        //   user.pets.push(newPet);
-        //   await user.save();
-        // }
+        const user = await User.findById(petDetails.userId);
+        if (user) {
+          user.pets.push(newPet);
+          await user.save();
+        }
     
         // Remove from pending posts
         admin.pendingPosts.splice(postIndex, 1);

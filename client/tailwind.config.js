@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const { addDynamicIconSelectors } = require('@iconify/tailwind');
+
 const withMT = require("@material-tailwind/react/utils/withMT");
 
 export default withMT({
@@ -12,7 +14,9 @@ export default withMT({
   },
   plugins: [
     require("flyonui"),
-    require("flyonui/plugin")
+    require("flyonui/plugin"),
+    addDynamicIconSelectors()
+
   ],
 })
 

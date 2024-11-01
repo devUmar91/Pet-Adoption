@@ -43,7 +43,7 @@ const UserDashboard = () => {
   useEffect(() => {
     if (user && token) {
       axios
-        .get(`http://localhost:3000/auth/${user._id}/posts`, {
+        .get(`http://localhost:3000/pets/mypets`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => setUserPosts(response.data))

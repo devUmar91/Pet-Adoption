@@ -56,7 +56,7 @@ const Navbar = () => {
           to="/"
           className="text-gray-100 text-2xl font-extrabold tracking-wide hover:text-indigo-400 transition-colors duration-300"
         >
-          Pet Adoption
+          PetPal
         </Link>
         <FiAlignJustify
           onClick={toggleMenu}

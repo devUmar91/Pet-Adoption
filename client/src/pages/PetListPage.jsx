@@ -29,7 +29,6 @@ const PetListPage = () => {
     }
   };
 
-  // Extract unique cities and categories for filtering
   const extractCitiesAndCategories = (data) => {
     const uniqueCities = [...new Set(data.map((pet) => pet.city))];
     const uniqueCategories = [...new Set(data.map((pet) => pet.category))];
@@ -37,7 +36,6 @@ const PetListPage = () => {
     setCategories(uniqueCategories);
   };
 
-  // Handle filter change
   useEffect(() => {
     const filterResults = () => {
       let results = pets;
@@ -78,9 +76,9 @@ const PetListPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 text-gray-800 px-6 pt-24 flex">
-      {/* Filter Sidebar */}
-      <aside className="w-1/4 p-4 bg-white mt-8 rounded-lg shadow-lg h-full sticky top-24">
+    <div className="min-h-screen bg-gray-200 text-gray-800 px-4 pt-24 pb-10">
+      {/* Filter on Top for Mobile Screens */}
+      <aside className="mb-6 bg-white p-4 rounded-lg md:w-1/2 md:ml-[25%] lg:ml-0 shadow-lg lg:w-1/4 lg:sticky  mr-5 lg:top-24 lg:float-left">
         <h2 className="text-xl font-bold mb-4 text-gray-700">Filter Pets</h2>
         <div className="mb-6">
           <label className="block text-gray-600 font-semibold mb-2">City</label>
@@ -126,22 +124,22 @@ const PetListPage = () => {
       </aside>
 
       {/* Pet List */}
-      <div className="w-3/4 pl-6">
+      <div className="lg:ml-6 lg:w-4/4">
         {filteredPets.length === 0 ? (
           <div className="flex flex-col items-center mt-16">
-            <p className="text-2xl font-bold text-gray-600">No pets available...</p>
+            <p className="text-2xl font-bold text-gray-600">Loading pets...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 mt-8 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className=" grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 mt-4 ml-4">
             {filteredPets.map((pet) => (
               <div
                 key={pet._id}
                 className="bg-gray-800 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300"
               >
-                <img src={pet.images[0]} alt={pet.name} className="w-full h-56 object-cover rounded-t-lg" />
+                <img src={pet.images[0]} alt={pet.name} className="w-full h-40 object-cover rounded-t-lg" />
                 <div className="p-4">
-                  <h3 className="text-2xl font-bold text-gray-100 mb-2">{pet.name}</h3>
-                  <p className="text-gray-400 mb-4">{pet.city}</p>
+                  <h3 className="text-lg font-bold text-gray-100 mb-1">{pet.name}</h3>
+                  <p className="text-gray-400 mb-2">{pet.city}</p>
                   <p
                     className={`mb-4 ${
                       pet.adoptionStatus === "adopted"
@@ -157,14 +155,14 @@ const PetListPage = () => {
                   </p>
                   <Link
                     to={`/pets/${pet._id}`}
-                    className="block text-center bg-indigo-500 hover:bg-indigo-400 text-white py-2 rounded-lg transition-colors"
+                    className="block text-center bg-indigo-500 hover:bg-indigo-400 text-white py-1 rounded-lg transition-colors"
                   >
                     View Details
                   </Link>
                   {user && user.role === "admin" && (
                     <button
                       onClick={() => openDeleteModal(pet)}
-                      className="mt-3 w-full text-center bg-red-500 hover:bg-red-400 text-white py-2 rounded-lg transition-colors"
+                      className="mt-2 w-full text-center bg-red-500 hover:bg-red-400 text-white py-1 rounded-lg transition-colors"
                     >
                       Delete Pet
                     </button>

@@ -42,7 +42,7 @@ const LoginPage = () => {
   return (
     <div className="mx-auto py-[130px] bg-gray-200">
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
+        <h2 class='login' className="text-2xl font-bold mb-4">Login</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

@@ -29,7 +29,7 @@ const HomePage = () => {
         <p className="text-lg mb-8 text-gray-300">Find your perfect companion today!</p>
         <Link
           to="/pets"
-          className="bg-indigo-500 text-gray-100 px-8 py-4 rounded-lg font-semibold transition-transform transform hover:scale-105 hover:bg-indigo-400"
+          className="bg-blue-500 text-gray-100 px-8 py-4 rounded-lg font-semibold transition-transform transform hover:scale-105 hover:bg-indigo-400"
         >
           Browse Pets
         </Link>
