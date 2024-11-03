@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 function Footer() {
   // Function to scroll to the top
+  // it scrolls up to top
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
