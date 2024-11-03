@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../Context/context";
 import { Carousel, IconButton } from "@material-tailwind/react";
+import { CarouselDemo } from "@/components/demo/CarouselDemo";
 
 const PetDetailsPage = () => {
   const { user } = useContext(UserContext);
@@ -22,6 +23,8 @@ const PetDetailsPage = () => {
     fetchPetDetails();
   }, [id]);
 
+  <CarouselDemo></CarouselDemo>
+
   const handleAdoptionRequest = () => {
     if (pet.contact) {
       const encodedMessage = encodeURIComponent(
@@ -37,8 +40,8 @@ const PetDetailsPage = () => {
   if (!pet) {
     return (
       <div className="min-h-screen bg-gray-900 text-gray-200 py-12 px-6">
-        <h2 className="text-4xl font-bold text-center text-red-500 mt-10">
-          Pet not found
+        <h2 className="text-3xl mt-20 font-bold text-center text-gray-200 mt-10">
+          Loading..
         </h2>
       </div>
     );

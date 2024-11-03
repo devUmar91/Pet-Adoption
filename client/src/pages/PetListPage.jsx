@@ -125,12 +125,17 @@ const PetListPage = () => {
 
       {/* Pet List */}
       <div className="lg:ml-6 lg:w-4/4">
-        {filteredPets.length === 0 ? (
-          <div className="flex flex-col items-center mt-16">
-            <p className="text-2xl font-bold text-gray-600">Loading pets...</p>
+        {filteredPets.length === 0 && (selectedCity || selectedCategory) ? (
+          <div className="flex flex-col items-center mt-10">
+            <p className="text-2xl font-bold text-gray-600">Pet not found.</p>
+          </div>
+        ) : filteredPets.length === 0 ? (
+          <div className="flex flex-col items-center">
+            <p className="text-2xl font-bold mt-10 text-gray-600">Loading pets...</p>
+            <span className="loading loading-ring loading-lg"></span>
           </div>
         ) : (
-          <div className=" grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 mt-4 ml-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 mt-4 ml-4">
             {filteredPets.map((pet) => (
               <div
                 key={pet._id}
