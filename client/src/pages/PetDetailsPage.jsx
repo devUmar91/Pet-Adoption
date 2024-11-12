@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../Context/context";
 import { Carousel, IconButton } from "@material-tailwind/react";
-import { CarouselDemo } from "@/components/demo/CarouselDemo";
+// import { CarouselDemo } from "@/components/demo/CarouselDemo";
 
 const PetDetailsPage = () => {
   const { user } = useContext(UserContext);
@@ -23,7 +23,7 @@ const PetDetailsPage = () => {
     fetchPetDetails();
   }, [id]);
 
-  <CarouselDemo></CarouselDemo>
+  // <CarouselDemo></CarouselDemo>
 
   const handleAdoptionRequest = () => {
     if (pet.contact) {
@@ -56,6 +56,7 @@ const PetDetailsPage = () => {
           <h2 className="text-4xl font-bold mb-4 text-indigo-400">{pet.name}</h2>
           <p className="text-md font-semibold mb-1">Breed: {pet.breed}</p>
           <p className="text-md font-semibold mb-1">Age: {pet.age}</p>
+          <p className="text-md font-semibold mb-1">Category: {pet.category}</p>
           <p className="text-md font-semibold mb-1">
             Status:
             <span

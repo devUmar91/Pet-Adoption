@@ -145,6 +145,7 @@ const PetListPage = () => {
                 <div className="p-4">
                   <h3 className="text-lg font-bold text-gray-100 mb-1">{pet.name}</h3>
                   <p className="text-gray-400 mb-2">{pet.city}</p>
+                  <p className="text-gray-400 mb-2">{pet.category}</p>
                   <p
                     className={`mb-4 ${
                       pet.adoptionStatus === "adopted"
