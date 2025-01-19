@@ -238,7 +238,7 @@ const UserDashboard = () => {
                 name="description"
                 value={petDetails.description}
                 onChange={handleInputChange}
-                className="w-full p-2 bg-gray-600 outline-none text-gray-200 rounded-lg"
+                className="w-full p-2  bg-gray-600 outline-none text-gray-200 rounded-lg"
                 required
               ></textarea>
             </div>

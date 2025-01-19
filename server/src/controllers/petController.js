@@ -50,9 +50,6 @@ export const getPetById = async (req, res) => {
   }
 };
 
- 
-
- 
 
   export const createPet = async (req, res) => {
     const { name, breed, age, description, images, contact, city, category } = req.body; // Ensure city and category are included

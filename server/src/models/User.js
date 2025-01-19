@@ -59,7 +59,7 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   // contact: { type: Number, required: true },
   role: { type: String, default: 'user', enum: ['user', 'admin'] },
-  pets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pet' }], // Reference to pets
+  pets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pet' }], // Reference to the Pet model
 });
 
 // Hash the password before saving a user

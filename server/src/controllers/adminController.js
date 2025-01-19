@@ -81,16 +81,14 @@
     export const approvePet = async (req, res) => {
       const { postId } = req.params;
       console.log('Post ID:', postId); // Log the postId for debugging
-      
+
       try {
         const admin = await Admin.findOne();
-        
         if (!admin) {
           return res.status(404).json({ message: 'Admin not found' });
         }
-    
+
         const postIndex = admin.pendingPosts.findIndex(post => post._id.toString() === postId);
-    
         if (postIndex === -1) {
           return res.status(404).json({ message: 'Post not found in pending posts' });
         }
@@ -103,9 +101,8 @@
             !petDetails.images || !petDetails.contact || !petDetails.city || !petDetails.category) {
           return res.status(400).json({ message: 'Missing required pet details' });
         }
-
-        // res.json({petDetails})
     
+        // Create the pet in the Pet collection
         const newPet = await Pet.create({
           name: petDetails.name,
           breed: petDetails.breed,
@@ -116,19 +113,21 @@
           city: petDetails.city,
           category: petDetails.category,
           adoptionStatus: 'available',
-          userId: petDetails.userId,  // if available in petDetails
+          userId: petDetails.userId,
         });
         
-        console.log('New Pet Created:', newPet); // Log the newly created pet
-    
-        // Optionally update user’s pet list (if applicable)
+        // console.log('New Pet Created:', newPet); // Log the newly created pet
+            
+        // Find the user and add the new pet to the user's pets array
         const user = await User.findById(petDetails.userId);
         if (user) {
-          user.pets.push(newPet);
-          await user.save();
-        }
+         user.pets.push(newPet); // Use _id of newPet created in Pet collection
+        await user.save();
+      } else {
+       console.warn('User not found to update pets array', petDetails.userId); // Log userId if user is not found
+}
     
-        // Remove from pending posts
+        // Remove the pet from the admin's pending posts
         admin.pendingPosts.splice(postIndex, 1);
         await admin.save();
     
@@ -138,6 +137,7 @@
         res.status(500).json({ message: 'Error approving the pet', error: error.message });
       }
     };
+    
     
     
 
