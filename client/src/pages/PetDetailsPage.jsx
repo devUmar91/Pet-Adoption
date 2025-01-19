@@ -162,13 +162,18 @@ const PetDetailsPage = () => {
             )}
           >
             {pet.images?.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`${pet.name} image ${index + 1}`}
-                className="w-full object-contain max-h-96"
-              />
-            ))}
+  <div
+    key={index}
+    className="w-full h-96 overflow-hidden bg-gray-200"
+  >
+    <img
+      src={image}
+      alt={`${pet.name} image ${index + 1}`}
+      className="w-full h-full object-cover"
+    />
+  </div>
+))}
+
           </Carousel>
         </div>
       </div>
