@@ -1,6 +1,7 @@
 // const Pet = require('../models/Pet');
 import Admin from "../models/admin.js";
 import Pet from "../models/Pet.js";
+import User from "../models/User.js";
 
 export const getPets = async (req, res) => {
   try {
@@ -74,20 +75,23 @@ export const getPetById = async (req, res) => {
             userId,
         };
 
-        console.log("New Pet Object:", newPet);
-
-        const admin = await Admin.findOne();
+        console.log("New Pet Object:");
+        const admin = await User.findOne({
+          role:"admin"
+        });
         if (admin) {
-            console.log("Admin Before Adding Pet:", admin);
+            // console.log("Admin Before Adding Pet:", admin);
 
             // Push the newPet object directly
             admin.pendingPosts.push(newPet);
 
             await admin.save();
-            console.log("Admin After Save:", admin);
+            // console.log("Admin After Save:", admin);
             res.status(201).json({ message: 'Pet submitted for approval' });
         } else {
+             console.log("Admin not found")
             return res.status(404).json({ message: 'Admin not found' });
+
         }
 
     } catch (err) {

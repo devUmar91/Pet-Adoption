@@ -50,6 +50,25 @@ import bcrypt from "bcryptjs";
 
 
 // new code
+const postSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    breed: { type: String, required: true },
+    age: { type: String, required: true },
+    description: { type: String, required: true },
+    images: { 
+        type: [String],  // Array of strings
+        // required: true 
+    },    
+       // Array for multiple images
+    contact: { type: Number, required: true },
+    city: { type: String, }, // New field for city
+    category: { type: String,  }, // New field for category
+    adoptionStatus: {
+      type: String,
+      enum: ['available', 'pending', 'adopted'],
+      default: 'available',
+    }
+  });
 
 
 
@@ -60,6 +79,7 @@ const UserSchema = new mongoose.Schema({
   // contact: { type: Number, required: true },
   role: { type: String, default: 'user', enum: ['user', 'admin'] },
   pets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pet' }], // Reference to the Pet model
+pendingPosts: [postSchema]
 });
 
 // Hash the password before saving a user

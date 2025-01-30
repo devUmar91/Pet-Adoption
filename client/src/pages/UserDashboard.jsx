@@ -33,6 +33,7 @@ const UserDashboard = () => {
     'Rodent',
     'Exotic Animal',
     'Insect',
+    'Others'
   ];
 
   useEffect(() => {
@@ -40,16 +41,7 @@ const UserDashboard = () => {
     if (fetchedToken) setToken(fetchedToken);
   }, []);
 
-  useEffect(() => {
-    if (user && token) {
-      axios
-        .get(`http://localhost:3000/pets/mypets`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => setUserPosts(response.data))
-        .catch((error) => console.error('Error fetching user posts:', error));
-    }
-  }, [user, token]);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -58,8 +50,8 @@ const UserDashboard = () => {
 
   const handleCategoryChange = (e) => {
     setPetDetails({ ...petDetails, category: e.target.value });
-    setUseCustomCategory(false); // Disables custom category when a predefined one is selected
-    setCustomCategory(''); // Resets custom category input
+    // setUseCustomCategory(false); // Disables custom category when a predefined one is selected
+    // setCustomCategory(''); // Resets custom category input
   };
 
   
@@ -141,7 +133,7 @@ const UserDashboard = () => {
             <p className="text-gray-300">Contact: {user?.contact}</p>
           </div>
 
-          <div className="bg-gray-800 p-4 rounded-lg">
+          {/* <div className="bg-gray-800 p-4 rounded-lg">
             <h3 className="text-2xl font-semibold text-indigo-400 mb-2">Your Posts</h3>
             {userPosts.length ? (
               <ul className="space-y-4">
@@ -164,7 +156,7 @@ const UserDashboard = () => {
             ) : (
               <p className="text-gray-400">No posts yet.</p>
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* Right Column */}
