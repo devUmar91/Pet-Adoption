@@ -14,7 +14,10 @@
     // }
     try {
 
-      const admin = await Admin.findOne({}, 'pendingPosts'); // Find the admin and get only the pendingPosts field
+      const admin = await User.findOne({
+        role:"admin"
+
+      }, 'pendingPosts'); // Find the admin and get only the pendingPosts field
       if (!admin) {
         return res.status(404).json({ message: 'Admin not found' });
       }
@@ -83,7 +86,9 @@
       console.log('Post ID:', postId); // Log the postId for debugging
 
       try {
-        const admin = await Admin.findOne();
+        const admin = await User.findOne({
+          role: "admin"
+        });
         if (!admin) {
           return res.status(404).json({ message: 'Admin not found' });
         }
