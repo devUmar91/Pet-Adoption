@@ -67,7 +67,9 @@ const postSchema = new mongoose.Schema({
       type: String,
       enum: ['available', 'pending', 'adopted'],
       default: 'available',
-    }
+    },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', } // Ensure userId is stored
+
   });
 
 
@@ -79,7 +81,7 @@ const UserSchema = new mongoose.Schema({
   // contact: { type: Number, required: true },
   role: { type: String, default: 'user', enum: ['user', 'admin'] },
   pets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pet' }], // Reference to the Pet model
-pendingPosts: [postSchema]
+  pendingPosts: [postSchema]
 });
 
 // Hash the password before saving a user

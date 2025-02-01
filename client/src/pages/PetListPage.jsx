@@ -16,7 +16,10 @@ const PetListPage = () => {
 
   useEffect(() => {
     fetchPets();
+    // console.log(user);
   }, []);
+
+  
 
   const fetchPets = async () => {
     try {

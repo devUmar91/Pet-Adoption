@@ -83,23 +83,22 @@
     // New code
     export const approvePet = async (req, res) => {
       const { postId } = req.params;
-      console.log('Post ID:', postId); // Log the postId for debugging
-
+      console.log('Post ID:', postId); // Debugging log
+      
+    
       try {
-        const admin = await User.findOne({
-          role: "admin"
-        });
+        const admin = await User.findOne({ role: "admin" });
         if (!admin) {
           return res.status(404).json({ message: 'Admin not found' });
         }
-
+    
         const postIndex = admin.pendingPosts.findIndex(post => post._id.toString() === postId);
         if (postIndex === -1) {
           return res.status(404).json({ message: 'Post not found in pending posts' });
         }
     
         const petDetails = admin.pendingPosts[postIndex];
-        console.log('Pet Details to Approve:', petDetails); // Log the pet details for debugging
+        console.log('Pet Details to Approve:', petDetails);
     
         // Ensure all required fields are present
         if (!petDetails.name || !petDetails.breed || !petDetails.age || !petDetails.description || 
@@ -113,24 +112,30 @@
           breed: petDetails.breed,
           age: petDetails.age,
           description: petDetails.description,
-          images: petDetails.images,  // Ensure images is an array of strings
+          images: petDetails.images,
           contact: petDetails.contact,
           city: petDetails.city,
           category: petDetails.category,
           adoptionStatus: 'available',
           userId: petDetails.userId,
         });
+    
+        console.log('New Pet Created:', newPet);
+    
+        // Find the user and add the new pet to their pets array
+        const user = await User.findById(petDetails._userId);
         
-        // console.log('New Pet Created:', newPet); // Log the newly created pet
-            
-        // Find the user and add the new pet to the user's pets array
-        const user = await User.findById(petDetails.userId);
         if (user) {
-         user.pets.push(newPet); // Use _id of newPet created in Pet collection
-        await user.save();
-      } else {
-       console.warn('User not found to update pets array', petDetails.userId); // Log userId if user is not found
-}
+          if (!Array.isArray(user.pets)) {
+            user.pets = []; // Ensure pets array exists
+          }
+    
+          user.pets.push(newPet._id); // Add pet ID to user
+          await user.save(); // Save user
+          console.log("User updated successfully with new pet:", user);
+        } else {
+          console.warn('User not found to update pets array', petDetails.userId);
+        }
     
         // Remove the pet from the admin's pending posts
         admin.pendingPosts.splice(postIndex, 1);
@@ -138,7 +143,7 @@
     
         res.status(200).json({ message: 'Pet approved and now available for adoption', pet: newPet });
       } catch (error) {
-        console.error('Error in approvePet:', error); // Log the error for debugging
+        console.error('Error in approvePet:', error);
         res.status(500).json({ message: 'Error approving the pet', error: error.message });
       }
     };

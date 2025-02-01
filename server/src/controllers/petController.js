@@ -52,53 +52,48 @@ export const getPetById = async (req, res) => {
 };
 
 
-  export const createPet = async (req, res) => {
-    const { name, breed, age, description, images, contact, city, category } = req.body; // Ensure city and category are included
-    const userId = req.user.id;
-     console.log(userId);
-     
-    if (!name || !breed || !age || !description || !images || !contact || !city || !category) {
-        return res.status(400).json({ message: 'All fields are required' });
-    }
+export const createPet = async (req, res) => {
+  const { name, breed, age, description, images, contact, city, category } = req.body;
+  // console.log("Request Body:", r);.
 
-    try {
-        const newPet = {
-            name,
-            breed,
-            age,
-            description,
-            images: images.length ? images : ["https://via.placeholder.com/150"],
-            contact: Number(contact),  // Ensure this is a number
-            city,                      // This should be defined
-            category,                  // This should be defined
-            adoptionStatus: 'pending',
-            userId,
-        };
+  // const userId = req.user.id;
 
-        console.log("New Pet Object:");
-        const admin = await User.findOne({
-          role:"admin"
-        });
-        if (admin) {
-            // console.log("Admin Before Adding Pet:", admin);
+  if (!name || !breed || !age || !description || !images || !contact || !city || !category) {
+      return res.status(400).json({ message: 'All fields are required' });
+  }
 
-            // Push the newPet object directly
-            admin.pendingPosts.push(newPet);
+  try {
+      const newPet = {
+          name,
+          breed,
+          age,
+          description,
+          images: images.length ? images : ["https://via.placeholder.com/150"],
+          contact: Number(contact),
+          city,
+          category,
+          adoptionStatus: 'pending',
+          // userId  // Ensure userId is set
+      };
 
-            await admin.save();
-            // console.log("Admin After Save:", admin);
-            res.status(201).json({ message: 'Pet submitted for approval' });
-        } else {
-             console.log("Admin not found")
-            return res.status(404).json({ message: 'Admin not found' });
+      console.log("New Pet Object:", newPet);
 
-        }
+      const admin = await User.findOne({ role: "admin" });
 
-    } catch (err) {
-        console.error("Error in createPet:", err);
-        res.status(500).json({ message: 'Error creating pet', error: err.message });
-    }
+      if (admin) {
+          admin.pendingPosts.push(newPet);
+          await admin.save();  // Save the admin with the new pending post
+          res.status(201).json({ message: 'Pet submitted for approval' });
+      } else {
+          return res.status(404).json({ message: 'Admin not found' });
+      }
+
+  } catch (err) {
+      console.error("Error in createPet:", err);
+      res.status(500).json({ message: 'Error creating pet', error: err.message });
+  }
 };
+
 
   
   export const getFilteredPets = async (req, res) => {

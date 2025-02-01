@@ -7,15 +7,13 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [pets, setPets] = useState([
-    
-    
-   
-   
-    
+ 
   ]);
 
   useEffect(() => {
     const token = Cookies.get('token'); // Ensure 'token' matches the cookie name
+    console.log(token);
+    
 
     if (token) {
 

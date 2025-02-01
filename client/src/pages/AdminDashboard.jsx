@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Tooltip } from '@material-tailwind/react'; // Tooltip from Material Tailwind
+import { Tooltip } from '@material-tailwind/react';
 import { UserContext } from '../Context/context';
-import Cookies from 'js-cookie'; // Ensure this is installed
-import axios from 'axios'; // Ensure axios is imported
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
 const AdminDashboard = () => {
   const { user } = useContext(UserContext);
@@ -10,30 +10,25 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [token, setToken] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState({});
   const [actionType, setActionType] = useState('');
 
-
+  // Fetch token from cookies
   useEffect(() => {
     const fetchedToken = Cookies.get('token');
     if (fetchedToken) {
       setToken(fetchedToken);
+      console.log("Token set:", fetchedToken);
+    } else {
+      console.log("No token found in cookies.");
     }
   }, []);
 
-  console.log(user);
-  
-
+  // Fetch pending posts
   useEffect(() => {
-    // if (!user) {
-    //   console.error('User is not authenticated.');
-    //   return;
-    // }
-
-    // console.log(user);
-    
-
     const fetchPendingPosts = async () => {
+      if (!token) return;
+      
       try {
         const response = await axios.get('http://localhost:3000/admin/pending-posts', {
           headers: {
@@ -41,75 +36,66 @@ const AdminDashboard = () => {
           },
         });
         const pendingRequests = response.data.filter(request => request.adoptionStatus === 'pending');
+        console.log(pendingRequests);
+        
         setRequests(pendingRequests);
+        // console.log(requests);
+        
       } catch (error) {
         console.error('Error fetching pending posts:', error);
       }
     };
 
     fetchPendingPosts();
-  }, [token, user]);
+  }, [token]);
 
-   
-  const fetchAllUsers = async () => {
+  // Fetch all users
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      if (!user || !token) return;
+
+      try {
+        const response = await axios.get('http://localhost:3000/admin/users', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUsers(response.data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchAllUsers();
+  }, [user, token]);
+
+  // Handle approve/reject requests
+  const handleRequest = async (requestId) => {
     try {
-      const response = await axios.get('http://localhost:3000/admin/users', {
+      const endpoint = actionType === 'approve'
+        ? `http://localhost:3000/admin/approve/${requestId}`
+        : `http://localhost:3000/admin/reject/${requestId}`;
+      const method = actionType === 'approve' ? 'put' : 'delete';
+
+      const res = await axios({
+        method,
+        url: endpoint,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUsers(response.data);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  };
 
-  useEffect(() => {
-    if (user) {
-      fetchAllUsers();
-    }
-  }, [user,token]);
-
-  const handleRequest = async (requestId) => {
-    try {
-      if (actionType === 'approve') {
-        await axios.put(`http://localhost:3000/admin/approve/${requestId}`, null, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      if (res.status === 200) {
         setRequests((prevRequests) =>
-          prevRequests.map((request) =>
-            request._id === requestId ? { ...request, adoptionStatus: 'Approved' } : request
-          )
+          prevRequests.filter(request => request._id !== requestId)
         );
-        window.location.reload()
-      } else if (actionType === 'reject') {
-        const res = await axios.delete(`http://localhost:3000/admin/reject/${requestId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log(res); // Check the response
-  
-        if (res.status === 200) {
-          const updatedRequests = await axios.get('http://localhost:3000/admin/pending-posts', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          setRequests(updatedRequests.data);
-        } else {
-          console.error("Failed to reject the request.");
-        }
       }
     } catch (error) {
-      console.error(`Error ${actionType === 'approve' ? 'approving' : 'rejecting'} request:`, error);
-      // Consider displaying an error message to the user
+      console.error(`Error ${actionType} request:`, error);
     }
   };
-  
 
+  // Open confirmation modal
   const openModal = (request, action) => {
     setSelectedRequest(request);
     setActionType(action);
@@ -136,26 +122,24 @@ const AdminDashboard = () => {
                   {request.adoptionStatus}
                 </span>
               </div>
-              {request.adoptionStatus === 'pending' && (
-                <div className="flex space-x-4">
-                  <Tooltip content="Approve Request" placement="top">
-                    <button
-                      onClick={() => openModal(request, 'approve')}
-                      className="px-4 py-2 text-sm font-medium bg-green-500 text-white rounded hover:bg-green-600 transition duration-200"
-                    >
-                      Approve
-                    </button>
-                  </Tooltip>
-                  <Tooltip content="Reject Request" placement="top">
-                    <button
-                      onClick={() => openModal(request, 'reject')}
-                      className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded hover:bg-red-600 transition duration-200"
-                    >
-                      Reject
-                    </button>
-                  </Tooltip>
-                </div>
-              )}
+              <div className="flex space-x-4">
+                <Tooltip content="Approve Request">
+                  <button
+                    onClick={() => openModal(request, 'approve')}
+                    className="px-4 py-2 text-sm font-medium bg-green-500 text-white rounded hover:bg-green-600 transition duration-200"
+                  >
+                    Approve
+                  </button>
+                </Tooltip>
+                <Tooltip content="Reject Request">
+                  <button
+                    onClick={() => openModal(request, 'reject')}
+                    className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded hover:bg-red-600 transition duration-200"
+                  >
+                    Reject
+                  </button>
+                </Tooltip>
+              </div>
             </li>
           ))}
         </ul>
@@ -166,11 +150,9 @@ const AdminDashboard = () => {
         <h3 className="text-xl font-semibold mb-4 text-gray-700">All Users</h3>
         <ul className="space-y-4">
           {users.map((user) => (
-            <li key={user._id} className="p-4 bg-gray-50 rounded-md shadow-sm flex flex-col text-gray-700">
+            <li key={user._id} className="p-4 bg-gray-50 rounded-md shadow-sm text-gray-700">
               <p><span className="font-medium">Name:</span> {user.name}</p>
               <p><span className="font-medium">Email:</span> {user.email}</p>
-              <p><span className="font-medium">Contact:</span> {user.contact}</p>
-              <p><span className="font-medium">Pets:</span> {user.pets.join(', ')}</p>
             </li>
           ))}
         </ul>
@@ -178,60 +160,30 @@ const AdminDashboard = () => {
 
       {/* Confirmation Modal */}
       {showModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-[70%] md:w-[60%] max-h-[80%] overflow-auto">
-      <h3 className="text-lg font-semibold mb-4 text-gray-700">Confirm Action</h3>
-      <p>Are you sure you want to {actionType} the request for <strong>{selectedRequest?.name}</strong>?</p>
-      <div className="mt-4">
-        <h4 className="text-md font-semibold text-gray-700">Pet Details:</h4>
-
-        {/* Display multiple images */}
-        {selectedRequest?.images?.length > 0 ? (
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-4"> {/* Adjust the number of columns based on screen size */}
-    {selectedRequest.images.map((image, index) => (
-      <img 
-        key={index}
-        src={image} 
-        alt={`${selectedRequest.name} image ${index + 1}`} 
-        className="w-full h-34 object-cover rounded-md" // Make the width full within the grid cell
-      />
-    ))}
-  </div>
-) : (
-  <p>No images available for this pet.</p>
-)}
-
-
-        <p><strong>Name:</strong> {selectedRequest?.name}</p>
-        <p><strong>Age:</strong> {selectedRequest?.age}</p>
-        <p><strong>Breed:</strong> {selectedRequest?.breed}</p>
-        <p><strong>Description:</strong> {selectedRequest?.description}</p>
-      </div>
-      <div className="flex justify-end space-x-4 mt-6">
-        <button
-          onClick={() => setShowModal(false)}
-          className="px-4 py-2 text-sm font-medium bg-gray-400 text-white rounded hover:bg-gray-500 transition duration-200"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => {
-            handleRequest(selectedRequest._id);
-            setShowModal(false);
-          }}
-          className={`px-4 py-2 text-sm font-medium text-white rounded ${
-            actionType === 'approve' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
-          } transition duration-200`}
-        >
-          {actionType.charAt(0).toUpperCase() + actionType.slice(1)}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h3 className="text-lg font-semibold mb-4 text-gray-700">Confirm {actionType} Action</h3>
+            <p>Are you sure you want to {actionType} the request for <strong>{selectedRequest?.name}</strong>?</p>
+            <div className="flex justify-end space-x-4 mt-6">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 text-sm font-medium bg-gray-400 text-white rounded hover:bg-gray-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  handleRequest(selectedRequest._id);
+                  setShowModal(false);
+                }}
+                className={`px-4 py-2 text-sm font-medium text-white rounded ${actionType === 'approve' ? 'bg-green-500' : 'bg-red-500'} hover:bg-opacity-80`}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

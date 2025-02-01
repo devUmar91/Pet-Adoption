@@ -23,6 +23,8 @@ const PetDetailsPage = () => {
     fetchPetDetails();
   }, [id]);
 
+  console.log(user);
+  
   // <CarouselDemo></CarouselDemo>
 
   const handleAdoptionRequest = () => {
