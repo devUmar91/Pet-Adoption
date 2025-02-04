@@ -34,6 +34,7 @@ const HomePage = () => {
           Browse Pets
         </Link>
       </div>
+      
     </div>
   );
 };
