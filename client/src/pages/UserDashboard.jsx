@@ -6,6 +6,9 @@ import { UserContext } from '../Context/context';
 const UserDashboard = () => {
   const { user } = useContext(UserContext);
   const [userPosts, setUserPosts] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [token, setToken] = useState('');
+
   const [petDetails, setPetDetails] = useState({
     name: '',
     breed: '',
@@ -16,32 +19,17 @@ const UserDashboard = () => {
     category: '',
     images: [],
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [token, setToken] = useState('');
-  // const [customCategory, setCustomCategory] = useState('');
-  // const [useCustomCategory, setUseCustomCategory] = useState(false);
 
   const predefinedCategories = [
-    'Dog',
-    'Cat',
-    'Bird',
-    'Reptile',
-    'Small Animal',
-    'Fish',
-    'Horse',
-    'Farm Animal',
-    'Rodent',
-    'Exotic Animal',
-    'Insect',
-    'Others'
+    'Dog', 'Cat', 'Bird', 'Reptile', 'Small Animal', 
+    'Fish', 'Horse', 'Farm Animal', 'Rodent', 'Exotic Animal', 
+    'Insect', 'Others'
   ];
 
   useEffect(() => {
     const fetchedToken = Cookies.get('token');
     if (fetchedToken) setToken(fetchedToken);
   }, []);
-
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -50,11 +38,7 @@ const UserDashboard = () => {
 
   const handleCategoryChange = (e) => {
     setPetDetails({ ...petDetails, category: e.target.value });
-    // setUseCustomCategory(false); // Disables custom category when a predefined one is selected
-    // setCustomCategory(''); // Resets custom category input
   };
-
-  
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -90,12 +74,14 @@ const UserDashboard = () => {
     }
 
     setIsSubmitting(true);
-    console.log("loggin before submit", petDetails);
 
     try {
+      // Attach userId to the request payload
+      const payload = { ...petDetails, userId: user?._id };
+
       const response = await axios.post(
         'http://localhost:3000/pets/post',
-        petDetails,
+        payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -111,7 +97,6 @@ const UserDashboard = () => {
         images: [],
       });
 
-      
     } catch (error) {
       console.error("Error submitting pet:", error);
       alert('Error submitting pet. Please try again later.');
@@ -132,31 +117,6 @@ const UserDashboard = () => {
             <p className="text-gray-300">Email: {user?.email}</p>
             <p className="text-gray-300">Contact: {user?.contact}</p>
           </div>
-
-          {/* <div className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="text-2xl font-semibold text-indigo-400 mb-2">Your Posts</h3>
-            {userPosts.length ? (
-              <ul className="space-y-4">
-                {userPosts.map((post) => (
-                  <li key={post._id} className="bg-gray-600 p-3 rounded-lg">
-                    <p className="text-gray-200 font-medium">Pet Name: {post.name}</p>
-                    <p className="text-gray-200">Breed: {post.breed}</p>
-                    <p className="text-gray-200">Age: {post.age}</p>
-                    <p className="text-gray-200">City: {post.city}</p>
-                    <p className="text-gray-200">Category: {post.category}</p>
-                    <p className="text-gray-200 truncate">Description: {post.description}</p>
-                    <div className="mt-2">
-                      {post.images && post.images.map((img, index) => (
-                        <img key={index} src={img} alt={`Pet ${post.name} - ${index + 1}`} className="h-20 w-20 rounded-md mr-2" />
-                      ))}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-400">No posts yet.</p>
-            )}
-          </div> */}
         </div>
 
         {/* Right Column */}
@@ -192,7 +152,7 @@ const UserDashboard = () => {
                 name="age"
                 value={petDetails.age}
                 onChange={handleInputChange}
-                className="w-full p-2  bg-gray-600 outline-none text-gray-200 rounded-lg"
+                className="w-full p-2 bg-gray-600 outline-none text-gray-200 rounded-lg"
                 required
               />
             </div>
@@ -208,7 +168,7 @@ const UserDashboard = () => {
               />
             </div>
             <div>
-              <label className="block capitalize text-gray-300 mb-1">Category:</label>
+              <label className="block text-gray-300 mb-1">Category:</label>
               <select
                 value={petDetails.category}
                 onChange={handleCategoryChange}
@@ -220,21 +180,16 @@ const UserDashboard = () => {
                 ))}
               </select>
             </div>
-
-
-
-
             <div>
               <label className="block text-gray-300 mb-1">Description:</label>
               <textarea
                 name="description"
                 value={petDetails.description}
                 onChange={handleInputChange}
-                className="w-full p-2  bg-gray-600 outline-none text-gray-200 rounded-lg"
+                className="w-full p-2 bg-gray-600 outline-none text-gray-200 rounded-lg"
                 required
               ></textarea>
             </div>
-
             <div>
               <label className="block text-gray-300 mb-1">Contact:</label>
               <input
@@ -246,7 +201,6 @@ const UserDashboard = () => {
                 required
               />
             </div>
-
             <div>
               <label className="block text-gray-300 mb-1">Upload Images:</label>
               <input

@@ -55,6 +55,8 @@ export const UserProvider = ({ children }) => {
   const getPetById = (id) => {
     return pets.find(pet => pet.id === parseInt(id));
   };
+  console.log(user);
+  
 
   return (
     <UserContext.Provider value={{user, setUser, pets, addPet, getPetById,  }}>

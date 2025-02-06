@@ -119,13 +119,17 @@
           adoptionStatus: 'available',
           userId: petDetails.userId,
         });
+        
     
-        console.log('New Pet Created:', newPet);
+        console.log('New Pet Created:', newPet.userId);
     
         // Find the user and add the new pet to their pets array
-        const user = await User.findById(petDetails._userId);
+        const user = await Pet.findById(petDetails._id);
         
+        console.log("user outside "+user)
         if (user) {
+          console.log("user inside "+user)
+
           if (!Array.isArray(user.pets)) {
             user.pets = []; // Ensure pets array exists
           }
@@ -134,7 +138,7 @@
           await user.save(); // Save user
           console.log("User updated successfully with new pet:", user);
         } else {
-          console.warn('User not found to update pets array', petDetails.userId);
+          console.warn('User not found to update pets array', petDetails._id);
         }
     
         // Remove the pet from the admin's pending posts

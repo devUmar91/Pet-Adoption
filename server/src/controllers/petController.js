@@ -53,9 +53,9 @@ export const getPetById = async (req, res) => {
 
 
 export const createPet = async (req, res) => {
-  const { name, breed, age, description, images, contact, city, category } = req.body;
-  // console.log("Request Body:", r);.
-
+  const { name, breed, age, description, images, contact, city, category ,userId} = req.body;
+  console.log("UserId:", userId);
+  
   // const userId = req.user.id;
 
   if (!name || !breed || !age || !description || !images || !contact || !city || !category) {
@@ -76,7 +76,7 @@ export const createPet = async (req, res) => {
           // userId  // Ensure userId is set
       };
 
-      console.log("New Pet Object:", newPet);
+      console.log("New Pet created", );
 
       const admin = await User.findOne({ role: "admin" });
 
@@ -93,24 +93,11 @@ export const createPet = async (req, res) => {
       res.status(500).json({ message: 'Error creating pet', error: err.message });
   }
 };
-
-
-  
   export const getFilteredPets = async (req, res) => {
     const { city } = req.body;
     console.log(city);
       
-  
-    // const filter = {};
-    // if (city) filter.city = city;
-    // if (category) filter.category = category;
-  
-    // try {
-    //   const pets = await Pet.find(filter);
-    //   res.status(200).json(pets);
-    // } catch (err) {
-    //   res.status(500).json({ message: 'Error fetching filtered pets', error: err.message });
-    // }
+
   };
   
 
@@ -160,12 +147,6 @@ export const getAllCitiesAndCategories = async (req, res) => {
   }
 };
 
-
-
-
-  
-  
-
 export const updatePet = async (req, res) => {
   try {
     const pet = await Pet.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -174,7 +155,6 @@ export const updatePet = async (req, res) => {
     res.status(500).json(err.message);
   }
 };
-
 
 export const deletePet = async (req, res) => {
   try {
